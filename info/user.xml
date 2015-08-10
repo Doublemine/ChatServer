@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>register info</comment>
-<entry key="newkey">Hello</entry>
-<entry key="newkey2">测试2</entry>
-<entry key="newkey2s">测试</entry>
+<comment>LOGIN INFO</comment>
+<entry key="23D21DFEE9D6F6FD1E3495BFC2869646">E3CEB5881A0A1FDAAD01296D7554868D</entry>
 </properties>

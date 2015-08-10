@@ -1,10 +1,11 @@
 package thread;
 
-import java.net.Socket;
-
 import server.ConDataCenter;
 import untl.TcpSocketUtil;
 
+/**
+ * 转发信息到所有已经连接的客户端
+ */
 public class ForwardMsgThread extends Thread {
 	private String msg;
 
@@ -13,9 +14,9 @@ public class ForwardMsgThread extends Thread {
 	}
 
 	@Override
-	public void run() {
-		for (Socket socket : ConDataCenter.clientCon) {
-			TcpSocketUtil.sendClientData(socket, this.msg);
+	public synchronized void run() {
+		for (ReceiveClientMsgThread socket : ConDataCenter.clientCon) {
+			TcpSocketUtil.sendClientData(socket.getSocket(), msg);
 		}
 	}
 }

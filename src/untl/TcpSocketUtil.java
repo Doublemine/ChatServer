@@ -2,9 +2,9 @@ package untl;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -23,16 +23,16 @@ public class TcpSocketUtil {
 	 * @param socket
 	 *            指定客户端连接的socket
 	 * @param flag
-	 *            布尔值标志位
+	 *            整形标志位
 	 * @return 向客户端发送服务器判断的数据状态，发送成功返回true否则返回false
 	 */
-	public static boolean sendClientFlag(Socket socket, boolean flag) {
+	public static boolean sendClientFlag(Socket socket, int flag) {
 		OutputStream os = null;
 		DataOutputStream dos = null;
 		try {
 			os = socket.getOutputStream();
 			dos = new DataOutputStream(os);
-			dos.writeBoolean(flag);// 写入布尔值
+			dos.writeInt(flag);// 写入整形值
 			return true;
 		} catch (Exception e) {
 			System.err.println(e.toString());
@@ -49,11 +49,10 @@ public class TcpSocketUtil {
 	 * @return 给指定的socket客户端发送数据，成功true，否则为false。
 	 */
 	public static boolean sendClientData(Socket socket, String msg) {
-		OutputStream os = null;
-		DataOutputStream dos = null;
+
 		try {
-			os = socket.getOutputStream();
-			dos = new DataOutputStream(os);
+			OutputStream os = socket.getOutputStream();
+			DataOutputStream dos = new DataOutputStream(os);
 			dos.writeUTF(msg);// 写入字符串
 			return true;
 		} catch (Exception e) {
@@ -74,9 +73,9 @@ public class TcpSocketUtil {
 			InputStream is = socket.getInputStream();
 			DataInputStream dis = new DataInputStream(is);
 			return dis.readUTF();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return "";
+		} catch (Exception e) {
+			// System.err.println("获取客户端信息错误：" + e.toString());
+			return "#ERROR#MSG";
 		}
 	}
 
@@ -90,12 +89,20 @@ public class TcpSocketUtil {
 	 */
 	public static synchronized boolean writenRegInfo(String[] str,
 			String filepath) {
-		Properties writeIni = new Properties();
-		FileOutputStream fos = null;
+
 		try {
+			File file = new File(filepath);
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			Properties writeIni = new Properties();
+			if (file.length() != 0) {
+				writeIni.loadFromXML(new FileInputStream(file));
+			}
+			FileOutputStream fos = new FileOutputStream(file);
 			writeIni.setProperty(str[0], str[1]);
-			fos = new FileOutputStream(filepath);
 			writeIni.storeToXML(fos, "LOGIN INFO");
+			fos.flush();
 			fos.close();
 		} catch (Exception e) {
 			System.err.println(e.toString());
@@ -126,7 +133,7 @@ public class TcpSocketUtil {
 				return false;
 			}
 		} catch (Exception e) {
-			System.err.println("isReged发生错误：" + e.toString());
+			// System.err.println("isReged发生错误：" + e.toString());
 			return false;
 		}
 
@@ -161,11 +168,15 @@ public class TcpSocketUtil {
 	public static boolean isLogin(String filepath, String username,
 			String passwd) {
 		Properties readlogin = new Properties();
+		File file = new File(filepath);
+		if (!file.exists()) {
+			return false;
+		}
 		FileInputStream fis = null;
 		String localusername = "";
 		String localpasswd = "";
 		try {
-			fis = new FileInputStream(filepath);
+			fis = new FileInputStream(file);
 			readlogin.loadFromXML(fis);
 			fis.close();
 			if (!readlogin.containsKey(username)) {
@@ -181,7 +192,7 @@ public class TcpSocketUtil {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("isLogin发生错误：" + e.toString());
+			// System.err.println("isLogin发生错误：" + e.toString());
 			return false;
 		}
 

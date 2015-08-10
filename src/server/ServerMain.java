@@ -1,14 +1,18 @@
 package server;
 
-import thread.ConClientThread;
-import thread.RegThread;
+import thread.ClosedServerThread;
+import thread.ListenClientMsgThread;
+import thread.ListenClientRegThread;
 
 public class ServerMain {
 	public static void main(String[] args) {
-		ConClientThread msgThread = new ConClientThread();
-		RegThread regThread = new RegThread();
+
+		Runtime.getRuntime().addShutdownHook(new ClosedServerThread());
+		ListenClientMsgThread msgThread = new ListenClientMsgThread();
+		ListenClientRegThread regThread = new ListenClientRegThread();
 		msgThread.start();
 		regThread.start();
 		System.err.println("Server has been Strat!");
+
 	}
 }
